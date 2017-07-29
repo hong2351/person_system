@@ -63,6 +63,11 @@
 }
 </style>
 <?php
+/*******************************************************************/
+/*******************************************************************/
+/***                 完成开发界面，测试调试中                    ***/
+/*******************************************************************/
+/*******************************************************************/
 $s1=sha1(date('Ymd'));
 $GLOBALS['s1']=$s1;
 //发布权限字符转中文
@@ -112,7 +117,7 @@ function opfun($a)
 	elseif($a['flgs']=="g"&&$a['flmp']==$_COOKIE['lyflgpn'])
 		return "<a href=\"javascript:window.open('".$a['flnk']."');\">打开</a>";
 	else
-		return "<a href=\"javascript:window.open('?gosearch=".$GLOBALS['s1']."&yesno=".$a['flid']."');\">验证打开</a>";
+		return "登陆打开链接";
 }
 //用户控制操作删除链接
 function dtfun($a,$b,$c,$d)
@@ -151,12 +156,6 @@ setInterval("window.onload()","1000");
 <body>
 <center>
 <?php
-/****************************************************************************/
-/****************************************************************************/
-/**		1、  	未开发“发布新链接信息处理”			       **/
-/**		2、  优化“搜索功能的问题，空时没有结果应该公开的显示……”			   **/
-/****************************************************************************/
-/****************************************************************************/
 if(!$db=mysqli_connect('10.5.5.5','nas_web','nas_web'))
 {
 	echo "<p>0、数据库连接失败！".mysqli_error();
@@ -198,25 +197,25 @@ function regusr()
 	$urnm1=mysqli_query($GLOBALS['db'],"select fuid from pbur where fusr='".$_POST['rgurn']."'");
 	$urnm2=mysqli_fetch_array($urnm1);
 	if($_POST['rgurn']=="")
-		return "登陆用户名不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>登陆用户名不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgurp']=="")
-		return "登陆新密码不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>登陆新密码不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgqrp']=="")
-		return "确认新密码不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>确认新密码不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgurp']!=$_POST['rgqrp'])
-		return "新密码两遍不一致……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>新密码两遍不一致……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgura']=="")
-		return "用户昵称不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>用户昵称不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgcmp']=="")
-		return "所在公司没有选择……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>所在公司没有选择……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgurt']=="")
-		return "联系电话不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>联系电话不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgurq']=="")
-		return "联系QQ号不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>联系QQ号不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($_POST['rgurm']=="")
-		return "联系邮箱不能为空……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>联系邮箱不能为空……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	elseif($urnm2['fuid']>=5000)
-		return "注册用户名已经存在，请修改注册信息……<a href='javascript:history.go(-1)'>请返回</a>";
+		return "<font style='color:red'>注册用户名已经存在，请修改注册信息……</font><a href='javascript:history.go(-1)'>请返回</a>";
 	
 	$ids1=mysqli_query($GLOBALS['db'],"select max(fuid) as maxid from pbur");
 	$ids2=mysqli_fetch_array($ids1);
@@ -307,7 +306,7 @@ if($_GET['new']=="yes"&&$_GET['link']=="new")
 	echo "<h1>发布新链接1</h1>";
 	if(sha1($_COOKIE['lyclub'])==$s1)
 	{
-		echo "<form action='?new=yes&link=newone' method='post'>";
+		echo "<form action='?urlstr=".$_SERVER['QUERY_STRING']."&new=yes&link=newone' method='post'>";
 		//公司类型select项目
 		echo "<input type='hidden' id='urlstr' name='urlstr' value='".$_SERVER['QUERY_STRING']."' />";
 		echo "<select id='cpone' name='cpone'>";
@@ -340,7 +339,7 @@ elseif($_GET['new']=="yes"&&$_GET['link']=="newone")
 	{
 		if($_POST['cpone']!="")
 		{
-			echo "<form action='?new=yes&link=reg' method='post'>";
+			echo "<form action='?urlstr=".$_GET['urlstr']."&new=yes&link=reg' method='post'>";
 			echo "<table width='100%'><input type='hidden' id='urlstr' name='urlstr' value='".$_SERVER['QUERY_STRING']."' />";
 			echo "<tr><th>链接新的标题：</th><td><input type='text' id='nlknm' name='nlknm' value='' /></td></tr>";
 			if($ct201701=mysqli_query($db,"select cptl from pbcp where cpnm='".$_POST['cpone']."'"))
@@ -406,11 +405,12 @@ elseif($_GET['new']=="yes"&&$_GET['comp']=="new")
 {
 	echo "<div id='rg_div'></div><div id='nwcp'>";
 	echo "<h1>发布新公司名称</h1>";
-	echo "<form action='?new=yes&comp=reg' method='post'>";
+	echo "<form action='?urlstr=new=yes&comp=reg' method='post'>";
 	if(sha1($_COOKIE['lyclub'])==$s1)
 	{
+		echo "<form action='?urlstr=".$_SERVER['QUERY_STRING']."&new=yes&comp=reg' method='post'>";
 	echo <<<NWCPFM
-	<form action='?new=yes&comp=reg' method='post'>
+	
 	<table>
 		<tr>
 			<th>公司代码：</th>
@@ -463,8 +463,8 @@ elseif($_GET['new']=="yes"&&$_GET['link']=="reg")
 			echo "请填写\"编注链接说明\"~&nbsp;<a href=\"javascript:history.go(-1);\">返回<a>";
 		else
 		{
-			echo "<form action='?new=yes&link=write' method='post'>";
-			echo "<table width='100%'><input type='hidden' id='urlstr' name='urlstr' value='".$_SERVER['QUERY_STRING']."' />";
+			echo "<form action='?urlstr=".$_GET['urlstr']."new=yes&link=write' method='post'>";
+			echo "<table width='100%'>";
 			echo "<tr><th>链接标题：</th><td><input type='hidden' id='ljbt' name='ljbt' value='".$_POST['nlknm']."' />".$_POST['nlknm']."</td></tr>";
 			echo "<tr><th>对应公司：</th><td><input type='hidden' id='ljgs' name='ljgs' value='".$_POST['nlkcp']."' />".funcomp($_POST['nlkcp'])."</td></tr>";
 			echo "<tr><th>分享类型：</th><td><input type='hidden' id='ljlx' name='ljlx' value='".$_POST['nlktp']."' />".chli2($_POST['nlktp'])."</td></tr>";
@@ -523,7 +523,7 @@ elseif($_GET['new']=="yes"&&$_GET['link']=="write")
 		else
 			if(mysqli_query($db,$likin))
 			{
-				echo "表单提交成功，<a href='?gosearch=".$s1."'>返回首页</a>";
+				echo "表单提交成功，<a href='?".$_GET['urlstr']."'>继续访问</a>";
 			}
 			else
 			{
@@ -532,7 +532,6 @@ elseif($_GET['new']=="yes"&&$_GET['link']=="write")
 		echo "</font></div>";
 	}
 }
-//
 //发布新公司名称的处理结果
 elseif($_GET['new']=="yes"&&$_GET['comp']=="reg")
 {
@@ -572,7 +571,7 @@ elseif($_GET['new']=="yes"&&$_GET['comp']=="reg")
 		$incp="insert into pbcp values($npd,'".$_POST['ncpnm']."','".$_POST['ncptl']."',now(),'".$_COOKIE['lyflurn']."',1,'','')";
 		if(mysqli_query($db,$incp))
 		{
-			echo "<script>window.alert('发布新的公司名称添加成功');location.href='?gosearch=".$s1."';</script>";
+			echo "<script>window.alert('发布新的公司名称添加成功');location.href='?".$_GET['urlstr']."';</script>";
 		}
 		else
 		{
@@ -591,14 +590,14 @@ if($_POST['qusr']=="退出")
 	setCOOKIE('lyfltel',"",time()+900);
 	setCOOKIE('lyfluqq',"",time()+900);
 	setCOOKIE('lyflmil',"",time()+900);
-	echo "<script>location.href='".$_POST['urlstr']."'</script>";
+	echo "<script>location.href='?gosearch=$s1'</script>";
 }
 echo "<div id='usr_logo'>";
 echo "<table width='100%'>";
 echo "<tr>";
 echo "<td width='15%' class='marq'><span id='curtime'></span></td>";
-echo "<th width='25%'><marquee class='marq' onmouseout='this.start()' onmouseover='this.stop()'>此网页目前正在处于开发阶段，没有进入测试阶段和运营阶段，请大家不要发布新链接和公司名，数据会经常初始化的，谢谢合作！</marquee></th>";
-echo "<th width='20%'><input type='button' onclick=\"javascript:location.href='?new=yes&link=new';\" value='发布新的链接' />&nbsp;&nbsp;<input type='button' onclick=\"javascript:location.href='?new=yes&comp=new';\" value='公司名新发布' /></th>";
+echo "<th width='25%'><marquee class='marq' onmouseout='this.start()' onmouseover='this.stop()'>此网页目前正在处于开发阶段，没有进入测试阶段和运营阶段，数据会经常初始化，谢谢合作！</marquee></th>";
+echo "<th width='20%'><input type='button' onclick=\"javascript:location.href='gosearch=$s1&?new=yes&link=new';\" value='发布新的链接' />&nbsp;&nbsp;<input type='button' onclick=\"javascript:location.href='?gosearch=$s1&new=yes&comp=new';\" value='公司名新发布' /></th>";
 echo "<th>";
 if($_POST['rgsmt']=="注册")
 {
@@ -615,9 +614,8 @@ elseif($_POST['lgsmt']=="注册")
 	echo "<div id='rg_div'>";
 	echo "</div>";
 	echo "<div id='usr_reg'>";
-	echo "<p></p>";
+	echo "<p></p><form method='post' action=' ?".$_SERVER['QUERY_STRING']."'>";
 	echo <<<USREG1
-	<form method='post'>
 		<center>
 		<table>
 		<tr>
@@ -676,7 +674,7 @@ echo <<<USREG1
 			<th><input type='submit' id='rgsmt' name='rgsmt' value='注册' /></th>
 			<th>
 USREG1;
-echo "<input type='button' onclick=\"javascript:location.href='".$_POST['urlstr']."'\" value='关闭' />";
+echo "<input type='button' onclick=\"javascript:location.href='?".$_SERVER['QUERY_STRING']."'\" value='关闭' />";
 echo <<<USREG2
 			</th>
 		</tr>
@@ -709,16 +707,15 @@ echo "</div>";
 
 //搜索表单
 echo "<h1>发布的文件搜索</h1>";
-echo "<form method='get' action='?search'>";
+echo "<form method='get' action='?gosearch=$s1'>";
 //链接类型select项目
 echo <<<SLT1
-	<input type='hidden' id='gosearch' name='gosearch' value='$s1' />
 	<select id='srht' name='srht'>
 	<option value='0' selected>请选择链接类型</option>
-	<option value='1'>网站分享</option>
-	<option value='2'>公司分享（需要用户登录才可以进行）</option>
-	<option value='3'>个人分享（需要用户登录才可以进行）</option>
-	<option value='4'>其他分享</option>
+	<option value='1'>公开查询</option>
+	<option value='2'>公司查询（需用户登录）</option>
+	<option value='3'>个人查询（需用户登录）含暂停链接</option>
+	<option value='4'>其他查询</option>
 	</select>
 	&nbsp;&nbsp;
 SLT1;
@@ -764,24 +761,45 @@ if($_GET['delete']!="")
 }
 if($_GET["gosearch"]==$s1)
 {
-	$sqlsch="select * from pbfl";
-	//控制查询的文件权限
-	if($_COOKIE['lyflurn']=="")
-		$sqlsch=$sqlsch." where flgs='p'";
-	$sqldt1=mysqli_query($db,$sqlsch);
+	if($_GET['srht']=="1"&&$_GET['srcp']=="")
+		$sqlsch="select * from pbfl where fltp='1' and flop=1";
+	elseif($_GET['srht']=="2"&&$_GET['srcp']=="")
+		echo "<script>window.alert('链接类型选择了公司类型，请选择公司名称，谢谢合作！');</script>";
+	elseif($_GET['srht']=="2"&&$_GET['srcp']!=""&&$_COOKIE['lyflgpn']==$_GET['srcp'])
+		$sqlsch="select * from pbfl where flmp='".$_GET['srcp']."' and flgs='g' and flop=1";
+	elseif($_GET['srht']=="2"&&$_GET['srcp']!=""&&$_COOKIE['lyflgpn']!=$_GET['srcp'])
+		echo "<script>window.alert('公司名称与用户的不一致，谢谢合作！');</script>";
+	elseif($_GET['srht']=="3"&&$_COOKIE['lyflgpn']=="")
+		echo "<script>window.alert('请登录再查询，谢谢合作！');</script>";
+	elseif($_GET['srht']=="3"&&$_COOKIE['lyflurn']!=""&&$_GET['srcp']!="")
+		$sqlsch="select * from pbfl where flur='".$_COOKIE['lyflurn']."' and flmp='".$_GET['srcp']."'";
+	elseif($_GET['srht']=="3"&&$_COOKIE['lyflurn']!=""&&$_GET['srcp']=="")
+		$sqlsch="select * from pbfl where flur='".$_COOKIE['lyflurn']."'";
+	elseif($_GET['srht']=="4")
+		$sqlsch="select * from pbfl where fltp='4'";
+	else
+		$sqlsch="select * from pbfl where flgs='p' and flop=1";
+	
+	if($_GET['srif']!="")
+		$sqlsch=$sqlsch." and ( flnm like '%".$_GET['srif']."%' or flif like '%".$_GET['srif']."%' )";
+	if($sqlsch!="")
+	{
+		$sqldt1=mysqli_query($db,$sqlsch);
+	}
 	echo "<p></p>";
 	if($sqldt1->num_rows>0)
+	{
 		while($note1=mysqli_fetch_array($sqldt1))
 		{
 			echo "<table border='1' width='80%'>";
 			echo "<tr bgcolor='#ABCEFD'><th>文件名称</th><th>公司名称</th><th>文件权限</th><th>发布类型</th><th>发布作者</th><th>发布时间</th><th>文件操作</th></tr>";
 			echo "<tr><th>".$note1[1]."</th><th>".funcomp($note1[4])."</th><th>".chli1($note1[6])."</th><th>".chli2($note1[3])."</th><th>".$note1[5]."</th><th>".$note1[9]."</th><th rowspan='2'>".opfun($note1)."<br/>".upfun($s1,$note1[0],$st,$note1['flur'],$note1['flop'])."&nbsp;&nbsp;".dtfun($s1,$note1[0],$st,$note1['flur'])."</th></tr>";
-			echo "<tr><th bgcolor='#ABCEFD'>文件说明</th><td colspan='5'>".$note1[2]."</td>";
+			echo "<tr><th bgcolor='#ABCEFD'>文件说明</th><td colspan='5'>".nl2br($note1[2])."</td>";
 			echo "</table>";
 			echo "<p></p>";
 		}
-
-	if($sqldt1->num_rows<=0)
+	}
+	else
 		echo "网站搜索结果中，没有符合您的发布记录……";
 }
 
